@@ -1,6 +1,6 @@
 ---@class DisplayModule
 local display = {}
-local i18n = require("lib.i18n")
+local i18n = require("cc-stdlib.i18n")
 
 display._output = nil
 display._encode = function(t) return t end
@@ -15,7 +15,7 @@ local renderLabels = {}
 
 function display.init(monitor_side, locale)
   if locale == "ru" then
-    local ok, mod = pcall(require, "lib.font")
+    local ok, mod = pcall(require, "cc-stdlib.font")
     if ok and mod then
       display._encode = mod.encode
     end

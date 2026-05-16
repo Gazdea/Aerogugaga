@@ -1,5 +1,7 @@
 ---@class ControlModule
 local control = {}
+local config = require("cc-aero-control.src.config")
+
 control._prev = {}
 
 --- Process redstone inputs and update state.controls

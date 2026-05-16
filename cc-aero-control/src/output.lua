@@ -1,5 +1,6 @@
 ---@class OutputModule
 local output = {}
+local config = require("cc-aero-control.src.config")
 
 --- Apply trigger outputs to redstone/peripheral
 --- Reads state.triggers and executes configured actions

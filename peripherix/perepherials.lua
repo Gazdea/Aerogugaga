@@ -80,7 +80,7 @@ for _, ptype in ipairs(typeOrder) do
 end
 table.insert(outLines, "-- Types: " .. table.concat(typeList, ", "))
 table.insert(outLines, "")
-table.insert(outLines, "local proxy = require(\"lib.proxy\")")
+table.insert(outLines, "local proxy = require(\"cc-stdlib.proxy\")")
 table.insert(outLines, "")
 table.insert(outLines, "local p = {}")
 table.insert(outLines, "")

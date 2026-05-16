@@ -1,5 +1,7 @@
 ---@class TriggerModule
 local trigger = {}
+local config = require("cc-aero-control.src.config")
+
 trigger._states = {}
 
 --- Evaluate all trigger rules and update state.triggers
