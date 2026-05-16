@@ -1,0 +1,28 @@
+return {
+  dashboard = {
+    title = "=== DASHBOARD ===",
+    altitude = "Alt",
+    pressure = "Press",
+    pitch = "Pitch",
+    yaw = "Yaw",
+    roll = "Roll",
+    velocity = "Vel",
+    velocity_magnitude = "Speed",
+    rel_angle = "Rel Angle",
+    x_axis = "X",
+    y_axis = "Y",
+    z_axis = "Z",
+    trigger = "TRG",
+    active = "ACTIVE",
+    inactive = "off",
+    altitude_hold = "ALT HOLD",
+    on = "ON",
+    off = "OFF",
+    units = {
+      meters = "m",
+      kPa = "kPa",
+      degrees = "\xC2\xB0",
+      m_s = "m/s",
+    },
+  },
+}

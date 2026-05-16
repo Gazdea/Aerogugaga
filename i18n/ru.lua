@@ -1,0 +1,28 @@
+return {
+  dashboard = {
+    title = "=== ПАНЕЛЬ ПРИБОРОВ ===",
+    altitude = "Выс",
+    pressure = "Давл",
+    pitch = "Тангаж",
+    yaw = "Курс",
+    roll = "Крен",
+    velocity = "Скор",
+    velocity_magnitude = "Скорость",
+    rel_angle = "Отн.угол",
+    x_axis = "X",
+    y_axis = "Y",
+    z_axis = "Z",
+    trigger = "Триг",
+    active = "АКТИВЕН",
+    inactive = "выкл",
+    altitude_hold = "ФИКС ВЫС",
+    on = "ВКЛ",
+    off = "ВЫКЛ",
+    units = {
+      meters = "м",
+      kPa = "кПа",
+      degrees = "\xC2\xB0",
+      m_s = "м/с",
+    },
+  },
+}
