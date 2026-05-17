@@ -1,13 +1,21 @@
+local dir = fs.getDir(shell.getRunningProgram())
+if dir ~= "" then
+  if dir:sub(1, 1) ~= "/" then
+    dir = fs.combine(shell.dir(), dir)
+  end
+  shell.setDir(dir)
+end
+
 package.path = shell.dir() .. "/?.lua;" .. package.path
 
 local config = require("src.config")
 local i18n = require("lib.i18n")
-local scanner = require("cc-aero-control.src.scanner")
-local control = require("cc-aero-control.src.control")
-local trigger = require("cc-aero-control.src.trigger")
-local output = require("cc-aero-control.src.output")
-local display = require("cc-aero-control.src.display")
-local state = require("cc-aero-control.src.state")
+local scanner = require("src.scanner")
+local control = require("src.control")
+local trigger = require("src.trigger")
+local output = require("src.output")
+local display = require("src.display")
+local state = require("src.state")
 
 local locale = config.get("settings", "locale")
 i18n.init(locale)
