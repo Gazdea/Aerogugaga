@@ -98,4 +98,14 @@ function display.render(readings, state)
   y = addLine(out, "========================", y)
 end
 
+--- Return current output target (term or monitor)
+function display.getOutput()
+  return display._output
+end
+
+--- Return current font encoder function
+function display.getEncode()
+  return display._encode
+end
+
 return display

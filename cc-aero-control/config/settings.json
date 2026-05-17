@@ -2,5 +2,10 @@
   "update_interval": 0.05,
   "monitor_side": null,
   "locale": "en",
-  "debug": false
+  "debug": false,
+  "node_id": null,
+  "network": {
+    "default_modem_side": null,
+    "default_channel": 42
+  }
 }

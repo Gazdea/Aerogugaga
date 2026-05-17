@@ -14,6 +14,7 @@ local defaults = {
 }
 
 local cache = {}
+local node_data = nil
 
 ---@param path string File path
 ---@return table|nil Parsed JSON table or nil
@@ -52,6 +53,21 @@ function config.reload()
   for k in pairs(cache) do
     cache[k] = nil
   end
+end
+
+--- Load per-node config from config/nodes/<id>.json
+---@param id string Node identifier
+function config.setNodeId(id)
+  node_data = loadJSON("config/nodes/" .. id .. ".json") or {}
+end
+
+--- Get node config value (or full table if key omitted)
+---@param key? string
+---@return any
+function config.node(key)
+  if not node_data then return nil end
+  if key then return node_data[key] end
+  return node_data
 end
 
 return config

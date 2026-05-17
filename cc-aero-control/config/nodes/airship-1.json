@@ -1,0 +1,38 @@
+{
+  "id": "airship-1",
+  "network": {
+    "modem_side": "back",
+    "channel": 42
+  },
+  "display": {
+    "monitor_side": null,
+    "locale": "en"
+  },
+  "sensors": {
+    "velocity": {
+      "top": "x"
+    }
+  },
+  "bindings": {
+    "front": {
+      "action": "throttle",
+      "axis": "x"
+    }
+  },
+  "triggers": [
+    {
+      "id": "low_altitude",
+      "condition": {
+        "source": "altitude.height",
+        "operator": "<",
+        "threshold": 20
+      },
+      "action": {
+        "type": "redstone",
+        "side": "back",
+        "value": true
+      },
+      "target_node": "ground-station"
+    }
+  ]
+}

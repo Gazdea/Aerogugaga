@@ -26,6 +26,20 @@ local function fmtType(t)
     return t
 end
 
+-- Load optional aliases from file argument
+local aliasFile = arg and arg[1]
+local aliases = {}
+if aliasFile and fs.exists(aliasFile) then
+  local f = fs.open(aliasFile, "r")
+  if f then
+    local ok, data = pcall(textutils.parseJSON, f.readAll())
+    f.close()
+    if ok and data and data.aliases then
+      aliases = data.aliases
+    end
+  end
+end
+
 -- Main
 local peripherals = peripheral.getNames()
 
@@ -159,6 +173,29 @@ for _, ptype in ipairs(typeOrder) do
     end
 end
 
+-- Generate alias entries
+local aliasCount = 0
+for alias_name, target_side in pairs(aliases) do
+    -- Verify target side exists among peripherals
+    local found = false
+    for _, name in ipairs(peripherals) do
+        if name == target_side then
+            found = true
+            break
+        end
+    end
+    if found then
+        local sanitized = sanitizeName(alias_name)
+        table.insert(outLines, "--- Alias: " .. alias_name .. " -> " .. target_side)
+        table.insert(outLines, "p." .. sanitized .. " = p[\"" .. target_side .. "\"]")
+        if sanitized ~= alias_name then
+            table.insert(outLines, "p[\"" .. alias_name .. "\"] = p." .. sanitized)
+        end
+        table.insert(outLines, "")
+        aliasCount = aliasCount + 1
+    end
+end
+
 table.insert(outLines, "return p")
 
 -- Write file
@@ -178,6 +215,9 @@ if f then
         for _ in pairs(byType[ptype].methods) do totalMethods = totalMethods + 1 end
     end
     print("Total: " .. totalMethods .. " methods across " .. #peripherals .. " peripheral(s)")
+    if aliasCount > 0 then
+        print("Aliases: " .. aliasCount)
+    end
 else
     print("Error: could not write peripheral_interfaces.lua")
 end

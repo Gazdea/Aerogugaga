@@ -1,0 +1,26 @@
+{
+  "id": "ground-station",
+  "network": {
+    "modem_side": "left",
+    "channel": 42
+  },
+  "display": {
+    "monitor_side": "top",
+    "locale": "en"
+  },
+  "triggers": [
+    {
+      "id": "low_altitude_signal",
+      "condition": {
+        "source": "altitude.height",
+        "operator": "<",
+        "threshold": 20
+      },
+      "action": {
+        "type": "redstone",
+        "side": "front",
+        "value": true
+      }
+    }
+  ]
+}

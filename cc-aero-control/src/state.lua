@@ -18,10 +18,16 @@
 ---@field operator string Comparison operator
 ---@field source string Data source path
 
+---@class NetworkInfo
+---@field peripherals table[] List of peripheral { name, type, methods? }
+---@field last_seen number Computer time of last contact
+
 ---@class State
 ---@field readings Readings
 ---@field controls Controls
 ---@field triggers table<string, TriggerState>
+---@field remote table<string, { readings: Readings, controls: Controls }>
+---@field network table<string, NetworkInfo>
 
 ---@type State
 local state = {
@@ -39,6 +45,8 @@ local state = {
     yaw_target = nil,
   },
   triggers = {},
+  remote = {},
+  network = {},
 }
 
 --- Replace current sensor readings
@@ -55,6 +63,37 @@ end
 ---@return Controls
 function state.getControls()
   return state.controls
+end
+
+--- Store data received from a remote node
+---@param node_id string
+---@param data table { readings?: Readings, controls?: Controls }
+function state.mergeRemote(node_id, data)
+  if not state.remote[node_id] then
+    state.remote[node_id] = {}
+  end
+  if data.readings then
+    state.remote[node_id].readings = data.readings
+  end
+  if data.controls then
+    state.remote[node_id].controls = data.controls
+  end
+end
+
+--- Clear all remote data
+function state.clearRemote()
+  state.remote = {}
+end
+
+--- Store peripheral info received from a remote node
+---@param node_id string
+---@param peripherals table[] List of { name, type, methods? }
+function state.updateNetwork(node_id, peripherals)
+  if not state.network[node_id] then
+    state.network[node_id] = {}
+  end
+  state.network[node_id].peripherals = peripherals
+  state.network[node_id].last_seen = os.clock()
 end
 
 return state

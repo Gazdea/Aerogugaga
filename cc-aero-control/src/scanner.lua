@@ -3,6 +3,7 @@ local scanner = {}
 
 local p = require("peripheral_interfaces")
 local config = require("src.config")
+local alias = require("src.alias")
 
 --- Scan all connected peripherals and return structured data
 --- Uses config/sensors.json to map velocity sensors to axes
@@ -47,7 +48,8 @@ function scanner.scan()
 
   local axes = config.get("sensors", "velocity") or {}
   for sensor_name, axis in pairs(axes) do
-    local sensor = p[sensor_name]
+    local actual_name = alias.resolve(sensor_name)
+    local sensor = p[actual_name]
     if sensor then
       local ok, r1, r2, r3 = pcall(sensor.getVelocity, sensor)
       if ok then

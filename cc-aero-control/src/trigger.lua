@@ -1,16 +1,11 @@
----@class TriggerModule
 local trigger = {}
 local config = require("src.config")
+local alias = require("src.alias")
 
 trigger._states = {}
 
---- Evaluate all trigger rules and update state.triggers
---- Supports hysteresis to prevent rapid toggling
---- Uses config/triggers.json for rule definitions
----@param readings table Current sensor readings
----@param state State Central state (triggers updated in-place)
-function trigger.tick(readings, state)
-  local rules = config.get("triggers", "triggers") or {}
+function trigger.tick(readings, state, rules_override, api_helpers)
+  local rules = rules_override or config.get("triggers", "triggers") or {}
   for _, rule in ipairs(rules) do
     if rule.enabled ~= false then
       if not trigger._states[rule.id] then
@@ -43,13 +38,66 @@ function trigger.tick(readings, state)
       }
     end
   end
+
+  loadCodeTriggers(state, api_helpers)
 end
 
---- Resolve a dot-separated source path from readings
---- e.g. "angles.pitch" -> readings["angles"]["pitch"]
----@param readings table
----@param source string Dot-separated path
----@return number
+local function loadCodeTriggers(state, api_helpers)
+  local ok, custom = pcall(require, "config.triggers_custom")
+  if not ok or type(custom) ~= "table" then return end
+
+  local data_api = {
+    readings = state.readings,
+    controls = state.controls,
+    triggers = state.triggers,
+    remote = state.remote,
+    network = state.network,
+  }
+
+  local trigger_api = {}
+  function trigger_api:redstone(side, value)
+    if side then redstone.setOutput(side, value) end
+  end
+  function trigger_api:peripheral(side, method, ...)
+    if side and method then pcall(peripheral.call, alias.resolve(side), method, ...) end
+  end
+  function trigger_api:exec(target, action)
+    if target and action and api_helpers and api_helpers.network then
+      api_helpers.network.sendExec(target, action)
+    end
+  end
+  function trigger_api:log(msg)
+    if api_helpers and api_helpers.debug and msg then
+      print("[trigger] " .. msg)
+    end
+  end
+
+  for _, ct in ipairs(custom) do
+    if type(ct) == "table" and ct.id and ct.check then
+      if ct.enabled ~= false then
+        if not trigger._states[ct.id] then
+          trigger._states[ct.id] = { active = false, value = 0 }
+        end
+        local was_active = trigger._states[ct.id].active
+        local now_active = ct.check(data_api)
+        trigger._states[ct.id].active = now_active
+        state.triggers[ct.id] = {
+          active = now_active,
+          value = 0,
+          threshold = 0,
+          operator = "custom",
+          source = "custom",
+        }
+        if now_active and not was_active and ct.fire then
+          ct.fire(trigger_api)
+        elseif not now_active and was_active and ct.clear then
+          ct.clear(trigger_api)
+        end
+      end
+    end
+  end
+end
+
 function resolveSource(readings, source)
   if not source then
     return 0
@@ -68,11 +116,6 @@ function resolveSource(readings, source)
   return type(val) == "number" and val or 0
 end
 
---- Evaluate a single condition
---- Supported operators: >, <, >=, <=, ==
----@param value number
----@param condition table { operator: string, threshold: number }
----@return boolean
 function evalCondition(value, condition)
   local op = condition.operator or ">"
   local threshold = condition.threshold or 0
