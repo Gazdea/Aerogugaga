@@ -18,6 +18,9 @@ function display.init(monitor_side, locale)
     local ok, mod = pcall(require, "lib.font")
     if ok and mod then
       display._encode = mod.encode
+      print("display: font.lua loaded, " .. #mod.encode("А") .. " bytes per char")
+    else
+      print("display: WARN font.lua not loaded, Cyrillic may show garbage")
     end
   end
   if monitor_side then

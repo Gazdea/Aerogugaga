@@ -31,4 +31,16 @@ print("\n--- Test 3: xx locale (fallback) ---")
 i18n.init("xx", shell.dir() .. "/i18n")
 print("title = " .. i18n.t("dashboard.title"))
 
+-- Test 4: Font encoding (if font.lua available)
+print("\n--- Test 4: font encoding ---")
+local ok, font = pcall(require, "lib.font")
+if ok then
+  local test_str = i18n.t("dashboard.title")
+  local encoded = font.encode(test_str)
+  print("original len: " .. #test_str .. ", encoded len: " .. #encoded)
+  print("encoded: " .. encoded)
+else
+  print("font.lua not loaded, skipping")
+end
+
 print("\n=== Done ===")

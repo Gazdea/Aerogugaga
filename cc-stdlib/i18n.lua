@@ -11,9 +11,10 @@ function i18n.init(locale, basePath)
   locale = locale or "en"
   basePath = basePath or "i18n"
   local primary = basePath .. "/" .. locale .. ".lua"
+  local escaped = basePath .. "/" .. locale .. "_e.lua"
   local fallback = basePath .. "/en.lua"
   print("i18n: locale = '" .. locale .. "'")
-  local paths = { primary, fallback }
+  local paths = { primary, escaped, fallback }
   for _, path in ipairs(paths) do
     local ok, result = pcall(dofile, path)
     if ok and type(result) == "table" then
