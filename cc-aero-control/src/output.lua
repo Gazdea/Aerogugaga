@@ -1,7 +1,6 @@
 ---@class OutputModule
 local output = {}
 local config = require("src.config")
-local alias = require("src.alias")
 
 --- Apply trigger outputs to redstone/peripheral
 --- Reads state.triggers and executes configured actions
@@ -39,7 +38,7 @@ function output.applyAction(action, active)
   if action.type == "redstone" and action.side then
     redstone.setOutput(action.side, active and action.value ~= false)
   elseif action.type == "peripheral" and action.side and action.method then
-    pcall(peripheral.call, alias.resolve(action.side), action.method, active)
+    pcall(peripheral.call, action.side, action.method, active)
   end
 end
 

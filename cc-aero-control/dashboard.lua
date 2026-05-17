@@ -11,8 +11,6 @@ package.path = shell.dir() .. "/?.lua;" .. package.path
 local config = require("src.config")
 local i18n = require("lib.i18n")
 local state = require("src.state")
-local proxy = require("lib.proxy")
-local alias = require("src.alias")
 
 local args = { ... }
 local node_id = args[1]
@@ -73,8 +71,6 @@ else
   display_mod = require("src.display")
   display_mod.init(config.get("settings", "monitor_side"), locale)
 end
-
-proxy.setAliasResolver(alias.resolve)
 
 if debug then
   print("Mode:", isP2P and "p2p" or "local")

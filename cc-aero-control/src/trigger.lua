@@ -1,6 +1,5 @@
 local trigger = {}
 local config = require("src.config")
-local alias = require("src.alias")
 
 trigger._states = {}
 
@@ -59,7 +58,7 @@ local function loadCodeTriggers(state, api_helpers)
     if side then redstone.setOutput(side, value) end
   end
   function trigger_api:peripheral(side, method, ...)
-    if side and method then pcall(peripheral.call, alias.resolve(side), method, ...) end
+    if side and method then pcall(peripheral.call, side, method, ...) end
   end
   function trigger_api:exec(target, action)
     if target and action and api_helpers and api_helpers.network then

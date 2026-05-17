@@ -77,10 +77,10 @@ Maps CC:T redstone input sides to control actions.
 
 ---
 
-## `aliases.json` — Peripheral aliases
+## `aliases.json` — Peripheral aliases (for peripherix generator)
 
-Maps custom names to actual CC:T peripheral side names. Lets you refer to devices
-by role instead of physical side.
+Maps custom names to actual CC:T peripheral side names. Used by the
+`perepherials.lua` generator to produce alias entries in `peripheral_interfaces.lua`.
 
 ```json
 {
@@ -95,15 +95,15 @@ by role instead of physical side.
 }
 ```
 
-### How it works
+### Usage
 
-- **`proxy.call()` / `proxy.wrap()`** — alias is resolved automatically (set up in `dashboard.lua`)
-- **`sensors.json`** — sensor names are resolved through the alias table
-- **`triggers.json`** — `action.side` in peripheral-type actions is resolved
-- **`triggers_custom.lua`** — `api:peripheral(side, ...)` resolves the side
-- **`peripheral_interfaces.lua`** — the generator (`perepherials.lua`) creates `p.<alias> = p.<side>` entries when an alias file is passed as an argument
+Pass the path to this file when running the generator:
+```
+perepherials.lua config/aliases.json
+```
 
-If a name has no matching alias, it passes through unchanged (backwards compatible).
+The generated `peripheral_interfaces.lua` will include `p.<alias> = p.<side>`
+entries, so you can use alias names in `sensors.json`, `triggers.json`, etc.
 
 ---
 
