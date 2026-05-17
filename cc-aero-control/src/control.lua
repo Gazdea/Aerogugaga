@@ -1,6 +1,6 @@
 ---@class ControlModule
 local control = {}
-local config = require("cc-aero-control.src.config")
+local config = require("src.config")
 
 control._prev = {}
 

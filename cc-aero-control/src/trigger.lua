@@ -1,6 +1,6 @@
 ---@class TriggerModule
 local trigger = {}
-local config = require("cc-aero-control.src.config")
+local config = require("src.config")
 
 trigger._states = {}
 

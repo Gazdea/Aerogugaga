@@ -1,8 +1,8 @@
 ---@class ScannerModule
 local scanner = {}
 
-local p = require("cc-aero-control.peripheral_interfaces")
-local config = require("cc-aero-control.src.config")
+local p = require("peripheral_interfaces")
+local config = require("src.config")
 
 --- Scan all connected peripherals and return structured data
 --- Uses config/sensors.json to map velocity sensors to axes

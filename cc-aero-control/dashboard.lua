@@ -1,5 +1,7 @@
-local config = require("cc-aero-control.src.config")
-local i18n = require("cc-stdlib.i18n")
+package.path = shell.dir() .. "/?.lua;" .. package.path
+
+local config = require("src.config")
+local i18n = require("lib.i18n")
 local scanner = require("cc-aero-control.src.scanner")
 local control = require("cc-aero-control.src.control")
 local trigger = require("cc-aero-control.src.trigger")
