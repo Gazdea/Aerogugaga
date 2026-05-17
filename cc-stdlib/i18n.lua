@@ -10,15 +10,25 @@ local strings = {}
 function i18n.init(locale, basePath)
   locale = locale or "en"
   basePath = basePath or "i18n"
-  local paths = { basePath .. "/" .. locale .. ".lua", basePath .. "/en.lua" }
+  local primary = basePath .. "/" .. locale .. ".lua"
+  local fallback = basePath .. "/en.lua"
+  print("i18n: locale = '" .. locale .. "'")
+  local paths = { primary, fallback }
   for _, path in ipairs(paths) do
     local ok, result = pcall(dofile, path)
     if ok and type(result) == "table" then
       strings = result
+      print("i18n: loaded '" .. path .. "'")
       return
+    end
+    if not ok then
+      print("i18n: FAILED to load '" .. path .. "': " .. tostring(result))
+    else
+      print("i18n: '" .. path .. "' did not return a table")
     end
   end
   strings = {}
+  print("i18n: no translation file loaded, strings empty")
 end
 
 --- Translate a dot-separated key with optional format args
