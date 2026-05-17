@@ -18,7 +18,7 @@ local display = require("src.display")
 local state = require("src.state")
 
 local locale = config.get("settings", "locale")
-i18n.init(locale)
+i18n.init(locale, shell.dir() .. "/i18n")
 display.init(config.get("settings", "monitor_side"), locale)
 
 if config.get("settings", "debug") then
