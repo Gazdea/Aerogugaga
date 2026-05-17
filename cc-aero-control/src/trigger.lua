@@ -3,42 +3,39 @@ local config = require("src.config")
 
 trigger._states = {}
 
-function trigger.tick(readings, state, rules_override, api_helpers)
-  local rules = rules_override or config.get("triggers", "triggers") or {}
-  for _, rule in ipairs(rules) do
-    if rule.enabled ~= false then
-      if not trigger._states[rule.id] then
-        trigger._states[rule.id] = { active = false, value = 0 }
-      end
-      local cur = trigger._states[rule.id]
-      local value = resolveSource(readings, rule.condition.source)
-      local hysteresis = rule.hysteresis or 0
-      local threshold = rule.condition.threshold or 0
-
-      if cur.active then
-        if rule.condition.operator == ">" or rule.condition.operator == ">=" then
-          cur.active = value > (threshold - hysteresis)
-        elseif rule.condition.operator == "<" or rule.condition.operator == "<=" then
-          cur.active = value < (threshold + hysteresis)
-        else
-          cur.active = evalCondition(value, rule.condition)
-        end
-      else
-        cur.active = evalCondition(value, rule.condition)
-      end
-
-      cur.value = value
-      state.triggers[rule.id] = {
-        active = cur.active,
-        value = value,
-        threshold = threshold,
-        operator = rule.condition.operator,
-        source = rule.condition.source,
-      }
-    end
+local function resolveSource(readings, source)
+  if not source then
+    return 0
   end
+  local parts = {}
+  for part in source:gmatch("[%w_]+") do
+    table.insert(parts, part)
+  end
+  local val = readings
+  for _, part in ipairs(parts) do
+    if type(val) ~= "table" then
+      return 0
+    end
+    val = val[part]
+  end
+  return type(val) == "number" and val or 0
+end
 
-  loadCodeTriggers(state, api_helpers)
+local function evalCondition(value, condition)
+  local op = condition.operator or ">"
+  local threshold = condition.threshold or 0
+  if op == ">" then
+    return value > threshold
+  elseif op == "<" then
+    return value < threshold
+  elseif op == ">=" then
+    return value >= threshold
+  elseif op == "<=" then
+    return value <= threshold
+  elseif op == "==" then
+    return math.abs(value - threshold) < 0.001
+  end
+  return false
 end
 
 local function loadCodeTriggers(state, api_helpers)
@@ -97,39 +94,42 @@ local function loadCodeTriggers(state, api_helpers)
   end
 end
 
-function resolveSource(readings, source)
-  if not source then
-    return 0
-  end
-  local parts = {}
-  for part in source:gmatch("[%w_]+") do
-    table.insert(parts, part)
-  end
-  local val = readings
-  for _, part in ipairs(parts) do
-    if type(val) ~= "table" then
-      return 0
-    end
-    val = val[part]
-  end
-  return type(val) == "number" and val or 0
-end
+function trigger.tick(readings, state, rules_override, api_helpers)
+  local rules = rules_override or config.get("triggers", "triggers") or {}
+  for _, rule in ipairs(rules) do
+    if rule.enabled ~= false then
+      if not trigger._states[rule.id] then
+        trigger._states[rule.id] = { active = false, value = 0 }
+      end
+      local cur = trigger._states[rule.id]
+      local value = resolveSource(readings, rule.condition.source)
+      local hysteresis = rule.hysteresis or 0
+      local threshold = rule.condition.threshold or 0
 
-function evalCondition(value, condition)
-  local op = condition.operator or ">"
-  local threshold = condition.threshold or 0
-  if op == ">" then
-    return value > threshold
-  elseif op == "<" then
-    return value < threshold
-  elseif op == ">=" then
-    return value >= threshold
-  elseif op == "<=" then
-    return value <= threshold
-  elseif op == "==" then
-    return math.abs(value - threshold) < 0.001
+      if cur.active then
+        if rule.condition.operator == ">" or rule.condition.operator == ">=" then
+          cur.active = value > (threshold - hysteresis)
+        elseif rule.condition.operator == "<" or rule.condition.operator == "<=" then
+          cur.active = value < (threshold + hysteresis)
+        else
+          cur.active = evalCondition(value, rule.condition)
+        end
+      else
+        cur.active = evalCondition(value, rule.condition)
+      end
+
+      cur.value = value
+      state.triggers[rule.id] = {
+        active = cur.active,
+        value = value,
+        threshold = threshold,
+        operator = rule.condition.operator,
+        source = rule.condition.source,
+      }
+    end
   end
-  return false
+
+  loadCodeTriggers(state, api_helpers)
 end
 
 return trigger
