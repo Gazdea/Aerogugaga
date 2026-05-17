@@ -34,6 +34,11 @@ function display.init(monitor_side, locale)
   renderLabels.y = display._output and 2 or 2
 end
 
+local function num(v)
+  local n = tonumber(v)
+  return n or 0
+end
+
 function display.render(readings, state)
   local out = display._output
   local t = i18n.t
@@ -49,45 +54,45 @@ function display.render(readings, state)
   local y = addLine(out, "", 2)
 
   y = addLine(out, string.format("%s: %7.1f %s    %s: %7.1f %s",
-    t("dashboard.altitude"), readings.altitude.height, t("dashboard.units.meters"),
-    t("dashboard.pressure"), readings.altitude.pressure, t("dashboard.units.kPa")), y)
+    t("dashboard.altitude"), num(readings.altitude.height), t("dashboard.units.meters"),
+    t("dashboard.pressure"), num(readings.altitude.pressure), t("dashboard.units.kPa")), y)
 
   y = addLine(out, string.format("%s: %6.1f %s    %s: %6.1f %s",
-    t("dashboard.pitch"), readings.angles.pitch, t("dashboard.units.degrees"),
-    t("dashboard.yaw"), readings.angles.yaw, t("dashboard.units.degrees")), y)
+    t("dashboard.pitch"), num(readings.angles.pitch), t("dashboard.units.degrees"),
+    t("dashboard.yaw"), num(readings.angles.yaw), t("dashboard.units.degrees")), y)
 
   y = addLine(out, string.format("%s: %6.1f %s",
-    t("dashboard.roll"), readings.angles.roll, t("dashboard.units.degrees")), y)
+    t("dashboard.roll"), num(readings.angles.roll), t("dashboard.units.degrees")), y)
 
   y = addLine(out, "-------------------------", y)
 
   y = addLine(out, string.format("%s %s: %6.1f %s",
     t("dashboard.velocity"), t("dashboard.x_axis"),
-    readings.velocity.x, t("dashboard.units.m_s")), y)
+    num(readings.velocity.x), t("dashboard.units.m_s")), y)
 
   y = addLine(out, string.format("%s %s: %6.1f %s",
     t("dashboard.velocity"), t("dashboard.y_axis"),
-    readings.velocity.y, t("dashboard.units.m_s")), y)
+    num(readings.velocity.y), t("dashboard.units.m_s")), y)
 
   y = addLine(out, string.format("%s %s: %6.1f %s",
     t("dashboard.velocity"), t("dashboard.z_axis"),
-    readings.velocity.z, t("dashboard.units.m_s")), y)
+    num(readings.velocity.z), t("dashboard.units.m_s")), y)
 
   y = addLine(out, string.format("%s: %6.1f %s",
     t("dashboard.velocity_magnitude"),
-    readings.velocity_magnitude, t("dashboard.units.m_s")), y)
+    num(readings.velocity_magnitude), t("dashboard.units.m_s")), y)
 
   y = addLine(out, "-------------------------", y)
 
   y = addLine(out, string.format("%s: %6.1f %s",
     t("dashboard.rel_angle"),
-    readings.rel_angle, t("dashboard.units.degrees")), y)
+    num(readings.rel_angle), t("dashboard.units.degrees")), y)
 
   for id, tr_state in pairs(state.triggers) do
     y = addLine(out, string.format("%s %s: %s (%.1f)",
       t("dashboard.trigger"), id,
       tr_state.active and t("dashboard.active") or t("dashboard.inactive"),
-      tr_state.value), y)
+      num(tr_state.value)), y)
   end
 
   y = addLine(out, "========================", y)
